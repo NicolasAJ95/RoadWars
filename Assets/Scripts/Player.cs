@@ -52,5 +52,12 @@ public class Player : MonoBehaviour {
             shootingState = false;
             drivingState = true;
         }
+
+
+    }
+
+    public void ReceiveDamage(float damage)
+    {
+        health = -damage;
     }
 }
