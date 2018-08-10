@@ -26,7 +26,7 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKey(KeyCode.LeftShift))
+      /*  if (Input.GetKey(KeyCode.LeftShift))
         {
             pAnimator.SetBool("isShooting", true);
             pAnimator.SetBool("isDriving", false);
@@ -38,6 +38,19 @@ public class Player : MonoBehaviour {
             pAnimator.SetBool("isDriving", true);
             shootingState = false;
             drivingState = true;
+        }*/
+        if (Input.GetAxis("Aim") != 0)
+        {
+            pAnimator.SetBool("isShooting", true);
+            pAnimator.SetBool("isDriving", false);
+            shootingState = true;
+            drivingState = false;
+        } else if (Input.GetAxis("Aim") == 0)
+        {
+            pAnimator.SetBool("isShooting", false);
+            pAnimator.SetBool("isDriving", true);
+            shootingState = false;
+            drivingState = true;
         }
-	}
+    }
 }

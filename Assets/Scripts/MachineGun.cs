@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MachineGun : MonoBehaviour {
 
@@ -14,13 +15,18 @@ public class MachineGun : MonoBehaviour {
     public bool canShoot;
 
     private Transform pTransform;
+    private Quaternion originalPosition;
     private ParticleSystem shootingParticle;
     private Transform pCamera;
 
+    public GameObject targetImg;
+
     // Use this for initialization
     void Start () {
+        targetImg.SetActive(false);
         actualAmmo = ammoCapacity;
         pTransform = this.GetComponent<Transform>();
+        originalPosition = new Quaternion(0,0,0,0);
         pCamera = Camera.main.GetComponent <Transform>();
         shootingParticle = GetComponentInChildren<ParticleSystem>();
         canShoot = true;
@@ -32,10 +38,16 @@ public class MachineGun : MonoBehaviour {
         {
             StartCoroutine(Shoot());
         }
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetAxis("Aim") != 0)
         {
             //pTransform.RotateAround(pCamera.forwardthis.transform.position );
             pTransform.forward = pCamera.forward;
+            targetImg.SetActive(true);
+        }
+        else if (Input.GetAxis("Aim") == 0)
+        {
+            targetImg.SetActive(false);
+            pTransform.rotation = originalPosition;
         }
 
     }
