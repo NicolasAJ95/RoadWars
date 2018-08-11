@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class MachineGun : MonoBehaviour {
 
     public float bulletDamage;
-    private int ammoCapacity = 180;
+    public int ammoCapacity = 180;
     public int actualAmmo;
+    public int magazineBullets;
+    public int magazineSize;
     public float ratio;
     public float range;
     public bool isReloading;
@@ -20,11 +22,14 @@ public class MachineGun : MonoBehaviour {
     private Transform pCamera;
 
     public GameObject targetImg;
+    public GameObject targetFeedbackImg;
 
     // Use this for initialization
     void Start () {
         targetImg.SetActive(false);
+        targetFeedbackImg.SetActive(false);
         actualAmmo = ammoCapacity;
+        magazineBullets = magazineSize;
         pTransform = this.GetComponent<Transform>();
         originalPosition = new Quaternion(0,0,0,0);
         pCamera = Camera.main.GetComponent <Transform>();
@@ -34,7 +39,7 @@ public class MachineGun : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (Input.GetKey(KeyCode.Mouse0) && canShoot && actualAmmo > 0)
+        if (Input.GetAxis("Fire1") != 0 && canShoot && magazineBullets > 0)
         {
             StartCoroutine(Shoot());
         }
@@ -52,6 +57,13 @@ public class MachineGun : MonoBehaviour {
 
     }
 
+    IEnumerator ShootFeedback()
+    {
+        targetFeedbackImg.SetActive(true);
+        yield return new WaitForSeconds(0.3f);
+        targetFeedbackImg.SetActive(false);
+    }
+
     IEnumerator Shoot()
     {
         shootingParticle.Play();
@@ -64,24 +76,48 @@ public class MachineGun : MonoBehaviour {
 
         RaycastHit hit;
         // Does the ray intersect any objects excluding the player layer
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, range, layerMask))
         {
-            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * range, Color.yellow);
             Debug.Log("Did Hit");
-            Debug.Log("shooting");
+            StartCoroutine("ShootFeedback");
             canShoot = false;
-          
+            Debug.Log(hit.transform.position);
+            //TODO: Call ReceiveDamage method if hit = enemy
         }
         else
         {
-            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
+            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * range, Color.white);
             Debug.Log("Did not Hit");
-            Debug.Log("shooting");
             canShoot = false;
         }
 
-        actualAmmo--;
+
+
+        magazineBullets--;
+        if(magazineBullets <= 0)
+        {
+            StartCoroutine("Reload");
+        }
         yield return new WaitForSeconds(ratio);
+        canShoot = true;
+    }
+
+    IEnumerator Reload()
+    {
+        Debug.Log("Reloading");
+        canShoot = false;
+        yield return new WaitForSeconds(reloadTime);
+        if(actualAmmo > magazineSize)
+        {
+            magazineBullets = magazineSize;
+            actualAmmo -= magazineSize;
+        } else
+        {
+            magazineBullets = actualAmmo;
+            actualAmmo -= actualAmmo;
+        }
+        
         canShoot = true;
     }
 }
