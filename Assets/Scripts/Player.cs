@@ -16,9 +16,12 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private Animator pAnimator;
 
+    private MachineGun machineGun;
+
 	// Use this for initialization
 	void Start () {
         pAnimator = GetComponent<Animator>();
+        machineGun = GetComponentInChildren<MachineGun>();
         health = 100;
         specialMeter = 10;
         drivingState = true;
@@ -54,6 +57,11 @@ public class Player : MonoBehaviour {
         }
 
 
+    }
+
+    public void ReceiveAmmo(int ammo)
+    {
+        machineGun.ReceiveAmmo(ammo);
     }
 
     public void ReceiveDamage(float damage)

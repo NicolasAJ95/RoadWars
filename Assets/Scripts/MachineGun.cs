@@ -16,16 +16,21 @@ public class MachineGun : MonoBehaviour {
     public float reloadTime;
     public bool canShoot;
 
-    private Transform pTransform;
+    private Transform pTransform; 
     private Quaternion originalPosition;
     private ParticleSystem shootingParticle;
     private Transform pCamera;
 
+    public Transform weaponBarrel;
+
     public GameObject targetImg;
     public GameObject targetFeedbackImg;
 
+    public Text bulletsGUI;
+
     // Use this for initialization
     void Start () {
+        
         targetImg.SetActive(false);
         targetFeedbackImg.SetActive(false);
         actualAmmo = ammoCapacity;
@@ -35,7 +40,8 @@ public class MachineGun : MonoBehaviour {
         pCamera = Camera.main.GetComponent <Transform>();
         shootingParticle = GetComponentInChildren<ParticleSystem>();
         canShoot = true;
-	}
+        bulletsGUI.text = magazineBullets.ToString() + "/" + actualAmmo;
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
@@ -54,7 +60,18 @@ public class MachineGun : MonoBehaviour {
             targetImg.SetActive(false);
             pTransform.rotation = originalPosition;
         }
+        
 
+    }
+
+    public void ReceiveAmmo(int ammo)
+    {
+        if (actualAmmo < ammoCapacity)
+        {
+            actualAmmo += ammo; 
+            actualAmmo -= (actualAmmo - ammoCapacity);
+            bulletsGUI.text = magazineBullets.ToString() + "/" + actualAmmo;
+        }
     }
 
     IEnumerator ShootFeedback()
@@ -66,6 +83,7 @@ public class MachineGun : MonoBehaviour {
 
     IEnumerator Shoot()
     {
+        bulletsGUI.text = magazineBullets.ToString() + "/" + actualAmmo;
         shootingParticle.Play();
         // Bit shift the index of the layer (8) to get a bit mask
         int layerMask = 1 << 8;
@@ -75,24 +93,28 @@ public class MachineGun : MonoBehaviour {
         layerMask = ~layerMask;
 
         RaycastHit hit;
+
         // Does the ray intersect any objects excluding the player layer
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, range, layerMask))
+        if (Physics.Raycast(weaponBarrel.position, weaponBarrel.TransformDirection(Vector3.forward), out hit, range, layerMask))
         {
-            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * range, Color.yellow);
+            Debug.DrawRay(weaponBarrel.position, weaponBarrel.TransformDirection(Vector3.forward) * range, Color.yellow);
             Debug.Log("Did Hit");
             StartCoroutine("ShootFeedback");
             canShoot = false;
             Debug.Log(hit.transform.position);
-            //TODO: Call ReceiveDamage method if hit = enemy
+
+            if (hit.collider.gameObject.GetComponent<HealthComponent>() != null)
+            {
+                Debug.Log("Damage received");
+                hit.collider.gameObject.GetComponent<HealthComponent>().ReceiveDamage(bulletDamage);
+            }
         }
         else
         {
-            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * range, Color.white);
+            Debug.DrawRay(weaponBarrel.position, weaponBarrel.TransformDirection(Vector3.forward) * range, Color.white);
             Debug.Log("Did not Hit");
             canShoot = false;
         }
-
-
 
         magazineBullets--;
         if(magazineBullets <= 0)
@@ -101,6 +123,8 @@ public class MachineGun : MonoBehaviour {
         }
         yield return new WaitForSeconds(ratio);
         canShoot = true;
+
+
     }
 
     IEnumerator Reload()
