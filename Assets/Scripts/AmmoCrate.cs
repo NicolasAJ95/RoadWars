@@ -7,17 +7,9 @@ public class AmmoCrate : MonoBehaviour {
     [SerializeField]
     private int bulletsAmount;
 
-	// Use this for initialization
 	void Start () {
 		
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-
 
     private void OnTriggerEnter(Collider col)
     {

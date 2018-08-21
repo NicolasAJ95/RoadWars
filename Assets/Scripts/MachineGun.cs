@@ -23,7 +23,7 @@ public class MachineGun : MonoBehaviour {
 
     public Transform weaponBarrel;
 
-    public GameObject targetImg;
+    
     public GameObject targetFeedbackImg;
 
     public Text bulletsGUI;
@@ -31,7 +31,7 @@ public class MachineGun : MonoBehaviour {
     // Use this for initialization
     void Start () {
         
-        targetImg.SetActive(false);
+        
         targetFeedbackImg.SetActive(false);
         actualAmmo = ammoCapacity;
         magazineBullets = magazineSize;
@@ -53,11 +53,11 @@ public class MachineGun : MonoBehaviour {
         {
             //pTransform.RotateAround(pCamera.forwardthis.transform.position );
             pTransform.forward = pCamera.forward;
-            targetImg.SetActive(true);
+            
         }
         else if (Input.GetAxis("Aim") == 0)
         {
-            targetImg.SetActive(false);
+            
             pTransform.rotation = originalPosition;
         }
         
