@@ -12,6 +12,11 @@ public class HealthComponent : MonoBehaviour {
 		
 	}
 
+    public void SendScore()
+    {
+
+    }
+
     public void ReceiveDamage(float damage)
     {
         health -= damage;

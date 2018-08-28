@@ -55,11 +55,11 @@ public class MachineGun : MonoBehaviour {
             pTransform.forward = pCamera.forward;
             
         }
-        else if (Input.GetAxis("Aim") == 0)
+      /*  else if (Input.GetAxis("Aim") == 0)
         {
             
             pTransform.rotation = originalPosition;
-        }
+        }*/
         
 
     }
