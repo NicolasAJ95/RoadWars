@@ -44,7 +44,6 @@ public class ObjectSpawner : MonoBehaviour {
 
     private int RandomBetweenRange(int range)
     {
-
         int number = Random.Range(0, range);
         return number;
     }
